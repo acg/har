@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# har(1): create a fast, random access filesystem archive
+
+barf() { echo "fatal: $0: $*" >&2; exit 111; }
+safe() { "$@" || barf "cannot $*"; }
+usage() { echo "usage: $0 dir file.har" >&2; exit 100; }
+
+[ $# -ne 2 ] && usage
+dir="$1" ; shift
+harball="$1" ; shift
+
+cdbmake_entry() { safe printf "+%d,%d:%s->%s\n" "${#1}" "${#2}" "$1" "$2"; }
+
+find "$dir" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%Y\n" | \
+(
+  IFS=`printf '\t'`
+  while read path type size perms uid mtime; do
+    filetype=""
+    key="f/$path"
+
+    case "$type" in
+      directory)
+        filetype="d"
+        content=`ls -1 "$path"`   # FIXME not great for large dirs
+        cdbmake_entry "$key" "$content"
+        ;;
+      regular*file)
+        filetype="f"
+        safe printf "+%d,%d:%s->" "${#key}" "$size" "$key" 
+        safe cat "$path" ; printf "\n"
+        ;;
+      symbolic*link)
+        filetype="l"
+        content=`readlink "$path"`
+        cdbmake_entry "$key" "$content"
+        ;;
+      *)
+        echo 1>&2 "skipping $path of unknown type $type"
+        ;;
+    esac
+
+    if [ -n "$filetype" ]; then
+      prefix=`safe printf "m/%s\0" "$path"`
+      cdbmake_entry $prefix"type" "$filetype"
+      cdbmake_entry $prefix"size" "$size"
+      cdbmake_entry $prefix"perms" "$perms"
+      cdbmake_entry $prefix"uid" "$uid"
+      cdbmake_entry $prefix"mtime" "$mtime"
+    fi
+
+  done
+  printf "\n"
+) | safe cdb -c "$harball"
