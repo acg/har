@@ -26,22 +26,19 @@ From the [wikipedia entry on the tar file format](http://en.wikipedia.org/wiki/T
 
 Until somebody writes unhar(1), here are some recipes for working with harballs.
 
-    # Listing all paths in a harball:
+Listing all paths in a harball:
 
     cdb -l -m file.har | sed -ne 's#^f/##p'
 
-
-    # Extracting the contents of a file, or extracting a directory listing:
+Extracting the contents of a file, or extracting a directory listing:
 
     cdb -q file.har f/path/to/member
 
-
-    # Get the permissions of a file or directory (other metadata keys are "type", "size", "uid", "mtime"):
+Get the permissions of a file or directory (other metadata keys are "type", "size", "uid", "mtime"):
 
     cdb -q file.har "`printf 'm/path/to/member\0perms'`"
 
-
-    # Dump all the contents of a harball (files + metadata):
+Dump all the contents of a harball (files + metadata):
 
     cdb -d file.har
 
