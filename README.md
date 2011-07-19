@@ -2,11 +2,11 @@
 
 The har(1) program is a little hack aimed at a [problem with tar archives](http://en.wikipedia.org/wiki/Tar_%28file_format%29#Random_access).
 
-Like tar, har bundles a directory in the filesystem into a single archive file. Unlike tar, any file, directory listing or attribute can be extracted from a large har archive in constant time, using constant memory, without waiting for wasteful disk reads. This is possible because a har archive is just a [cdb](http://cr.yp.to/cdb.html).
+Like tar, har bundles a directory tree into a single archive file. Unlike tar, any file, directory listing or attribute can be extracted from a large har archive in constant time, using constant memory, without waiting for wasteful disk reads. This is possible because a har archive is just a [cdb](http://cr.yp.to/cdb.html).
 
 A har archive is also referred to as a "harball."
 
-The name "har" comes from "Hashed ARchive".
+The name "HAR" stands for "H-ashed AR-chive".
 
 The inspiration for har was Matthew Story's [d2cdb](https://github.com/matthewstory/d2cdb). Some of the code in har bears a striking resemblance to d2cdb, and they both happen to be [54 line shell scripts](http://54lines.com/). Let's hear it for Matt. Cheerio, my good man.
 
@@ -30,7 +30,7 @@ Listing all paths in a harball:
 
     cdb -l -m file.har | sed -ne 's#^f/##p'
 
-Extracting the contents of a file, or extracting a directory listing:
+To extract the contents of a file to stdout, or print a listing of entries for directory members:
 
     cdb -q file.har f/path/to/member
 
@@ -47,4 +47,11 @@ Dump all the contents of a harball (files + metadata):
 * Requires [tinycdb](http://www.corpit.ru/mjt/tinycdb.html).
 * Only works with linux currently. The GNU stat(1) invocation hasn't been ported to BSD or Mac OS X yet.
 * The unhar(1) program hasn't been written yet. ;)
+* The largest har archive that can be created is 2GB. This is a limitation of cdb.
+
+## Author ##
+
+Alan Grow <alangrow+nospam@gmail.com>
+Copyright (c) 2011
+Published under the BSD License
 
