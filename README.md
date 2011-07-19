@@ -51,6 +51,25 @@ Dump the raw contents of a harball to stdout (files + metadata):
 
     cdb -d file.har
 
+## Benchmarks ##
+
+Benchmarking extraction of a single member from the middle of an uncompressed archive containing 10,000 16k files. Results on my machine:
+
+                elapsed      user   system   #inputs   #outputs   archive size   
+    tar xf        9.06s     0.15s    0.69s    641192         32      332810240
+    unhar         0.20s     0.04s    0.01s       648         32      331722653
+
+As you can see,
+
+  * unhar is ~50x faster than tar xf for this case
+  * both processes are I/O bound...
+  * ...but tar xf does ~1000x more IOs than unhar
+  * the archives are about the same size (316MB)
+
+This is a totally contrived example. It's easy to come up with examples where tar kicks that crap out of har: smaller archive sizes; fewer members per archive; archive creation, where har is slower because it's hashing keys, among other things.
+
+The point is, for random access to members in an archive, tar just got its ass handed to it by a 54-line shell script. Okay, with the help of about 1.6Kloc of tinycdb C code.
+
 ## Issues and Todo Items ##
 
 * Only works with linux currently. The GNU stat(1) invocation is very non-portable, and doesn't work on BSD or Mac OS X yet.
