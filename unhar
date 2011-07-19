@@ -1,0 +1,54 @@
+#!/bin/sh
+# unhar(1): extract members from a fast, random access filesystem archive
+
+barf() { echo "fatal: $0: $*" >&2; exit 111; }
+safe() { "$@" || barf "cannot $*"; }
+usage() { echo "usage: $0 file.har [path1 path2 ...]" >&2; exit 100; }
+
+extract_metadata() {
+  harball="$1" ; shift
+  member="$1" ; shift
+
+  for attr in type size perms uid gid mtime; do
+    key=`printf 'm/%s\0%s' "$member" "$attr"`
+    safe cdb -q -m "$harball" "$key"
+  done | tr '\n' ' ' ; printf "\n"
+}
+
+extract_member() {
+  harball="$1" ; shift
+  member="$1" ; shift # FIXME validate: no upwards, no leading /
+  base=`basename "$member"`
+
+  safe extract_metadata "$harball" "$member" | \
+  while read type size perms uid gid mtime; do
+    echo "$member"
+    test -f "$base" && safe rm "$base"
+    case "$type" in
+      f)
+        safe cdb -q "$harball" "f/$member" > "$base"
+        ;;
+      d)
+        safe mkdir -p -- "$base"
+        safe cdb -q -m "$harball" "f/$member" | while read entry; do (
+          cd "$base" && safe extract_member "$harball" "$member/$entry"
+        ) done
+        ;;
+      l)
+        target=`safe cdb -q "$harball" "f/$member"`
+        safe ln -s -- "$target" "$base"
+        ;;
+    esac
+    safe chmod -- "$perms" "$base"
+    # TODO touch, using mtime timestamp
+    # TODO chown, if we are root
+  done
+}
+
+[ $# -lt 1 ] && usage
+harball=`readlink -f "$1"` ; shift
+
+{ [ $# -gt 0 ] && for i in "$@"; do echo "$i"; done || cdb -q -m "$harball" r; 
+} | while read path; do
+  safe extract_member "$harball" "$path"
+done
