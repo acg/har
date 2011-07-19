@@ -100,7 +100,7 @@ Most storage media is random access now. Why do we still need these lame sequent
 
 Here's why:
 
-    ssh cloud tar xvzf home.tar.gz - | tar xvzf - -C /home
+    ssh cloud tar cvzf - /home | tar xvzf - -C /home
 
 A streaming archive format remains a very useful thing.
 
