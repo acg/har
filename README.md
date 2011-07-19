@@ -20,7 +20,7 @@ From the [wikipedia entry on the tar file format](http://en.wikipedia.org/wiki/T
 
 ## Creating a har Archive ##
 
-    har file.har dir
+    har file.har dir1 dir2 file3 ...
 
 ## Working with har Archives ##
 
@@ -38,7 +38,7 @@ Get the permissions of a file or directory (other metadata keys are "type", "siz
 
     cdb -q file.har "`printf 'm/path/to/member\0perms'`"
 
-Dump all the contents of a harball (files + metadata):
+Dump all the contents of a harball to stdout (files + metadata):
 
     cdb -d file.har
 
@@ -49,9 +49,9 @@ Dump all the contents of a harball (files + metadata):
 * The unhar(1) program hasn't been written yet. ;)
 * The largest har archive that can be created is 2GB. This is a limitation of cdb.
 
-## Author ##
+## Authors ##
 
-Alan Grow <alangrow+nospam@gmail.com>
-Copyright (c) 2011
+Alan Grow, Matthew Story <br/>
+Copyright (c) 2011 <br/>
 Published under the BSD License
 
