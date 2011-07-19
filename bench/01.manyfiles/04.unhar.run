@@ -1,0 +1,2 @@
+#!/bin/sh
+( cd dst ; ../rusage unhar ../topdir.har topdir/small.007987 )

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rm -rf src
+rm -rf dst
+rm -rf topdir.tar
+rm -rf topdir.har
+

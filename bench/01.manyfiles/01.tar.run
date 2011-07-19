@@ -1,0 +1,3 @@
+#!/bin/sh
+( cd src ; ../rusage tar cf ../topdir.tar topdir )
+ls -l topdir.tar

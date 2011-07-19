@@ -1,0 +1,19 @@
+#!/bin/sh
+
+PATH="$PATH":"$PWD"/../..
+export PATH
+
+coldstart() {
+  id=`id -u`
+  if [ "$id" -eq 0 ]; then
+    sync ; echo 3 | tee /proc/sys/vm/drop_caches
+  fi
+}
+
+ls *.run | sort -k1,1n -t. | while read script; do
+  echo "####### $script ########"
+  ./"$script"
+  echo "####### $script ########"
+  echo
+done
+

@@ -1,0 +1,2 @@
+#!/bin/sh
+( cd dst ; ../rusage tar xf ../topdir.tar topdir/small.007987 )

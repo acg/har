@@ -1,0 +1,3 @@
+#!/bin/sh
+( cd src ; ../rusage har ../topdir.har topdir )
+ls -l topdir.har
