@@ -12,7 +12,7 @@ harball="$1" ; shift
 
 { for i in "$@"; do cdbmake_entry "r" "$i"; done; # root entries
 find "$@" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%g\t%Y\n" | (
-  IFS=`printf '\t'`; 
+  IFS=`printf '\t'` 
   while read path type size perms uid gid mtime; do
     filetype=""
     key="f/$path"
