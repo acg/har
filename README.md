@@ -34,7 +34,7 @@ To extract the contents of a file to stdout, or print a listing of entries for d
 
     cdb -q file.har f/path/to/member
 
-Get the permissions of a file or directory (other metadata keys are "type", "size", "uid", "mtime"):
+Get the permissions of a file or directory (other metadata keys are "type", "size", "uid", "gid", and "mtime"):
 
     cdb -q file.har "`printf 'm/path/to/member\0perms'`"
 

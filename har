@@ -5,17 +5,16 @@
 barf() { echo "fatal: $0: $*" >&2; exit 111; }
 safe() { "$@" || barf "cannot $*"; }
 usage() { echo "usage: $0 dir file.har" >&2; exit 100; }
+cdbmake_entry() { safe printf "+%d,%d:%s->%s\n" "${#1}" "${#2}" "$1" "$2"; }
 
 [ $# -ne 2 ] && usage
 dir="$1" ; shift
 harball="$1" ; shift
 
-cdbmake_entry() { safe printf "+%d,%d:%s->%s\n" "${#1}" "${#2}" "$1" "$2"; }
+find "$dir" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%g\t%Y\n" | (
+  cdbmake_entry "r" "$dir"   # For finding the root entry.
 
-find "$dir" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%Y\n" | \
-(
-  IFS=`printf '\t'`
-  while read path type size perms uid mtime; do
+  IFS=`printf '\t'` while read path type size perms uid gid mtime; do
     filetype=""
     key="f/$path"
 
@@ -46,9 +45,10 @@ find "$dir" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%Y\n" | \
       cdbmake_entry $prefix"size" "$size"
       cdbmake_entry $prefix"perms" "$perms"
       cdbmake_entry $prefix"uid" "$uid"
+      cdbmake_entry $prefix"gid" "$gid"
       cdbmake_entry $prefix"mtime" "$mtime"
     fi
-
   done
+
   printf "\n"
 ) | safe cdb -c "$harball"
