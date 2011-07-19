@@ -20,7 +20,7 @@ From the [wikipedia entry on the tar file format](http://en.wikipedia.org/wiki/T
 
 ## Creating a har Archive ##
 
-    har dir file.har
+    har file.har dir
 
 ## Working with har Archives ##
 
