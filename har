@@ -10,9 +10,10 @@ cdbmake_entry() { safe printf "+%d,%d:%s->%s\n" "${#1}" "${#2}" "$1" "$2"; }
 [ $# -lt 2 ] && usage
 harball="$1" ; shift
 
-{ for i in "$@"; do cdbmake_entry "r" "$i"; done # root entries
+{ for i in "$@"; do cdbmake_entry "r" "$i"; done; # root entries
 find "$@" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%g\t%Y\n" | (
-  IFS=`printf '\t'` while read path type size perms uid gid mtime; do
+  IFS=`printf '\t'` 
+  while read path type size perms uid gid mtime; do
     filetype=""
     key="f/$path"
 
@@ -49,4 +50,4 @@ find "$@" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%g\t%Y\n" | (
   done
 
   printf "\n"
-) } | safe cdb -c "$harball"
+); } | safe cdb -c "$harball"
