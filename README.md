@@ -16,15 +16,15 @@ Like tar, har bundles a directory tree into a single archive file. Unlike tar, a
 * [Issues and Todo items](#issues-todos)
 * [Authors](#authors)
 
-## About har ##
 <a name="about-har"></a>
+## About har ##
 
 A .har archive is also referred to as a "harball." The name "HAR" stands for "H-ashed AR-chive".
 
 The inspiration for har was Matthew Story's [d2cdb](https://github.com/matthewstory/d2cdb). Some of the code in har and unhar bears a striking resemblance to d2cdb, and they all happen to be [54 line shell scripts](http://54lines.com/). Let's hear it for Matt. Cheerio, my good man.
 
-## The problem with tar ##
 <a name="problem-with-tar"></a>
+## The problem with tar ##
 
 From the [wikipedia entry on the tar file format](http://en.wikipedia.org/wiki/Tar_%28file_format%29#Random_access):
 
@@ -32,24 +32,24 @@ From the [wikipedia entry on the tar file format](http://en.wikipedia.org/wiki/T
 
 > The possible reason for not using a centralized location of information is rooted in the fact that tar was originally meant for tapes, which are bad at random access anyway: if the TOC were at the start of the archive, creating it would mean to first calculate all the positions of all files, which either needs doubled work, a big cache, or rewinding the tape after writing everything to write the TOC. On the other hand, if the TOC were at the end-of-file (as is the case with ZIP files, for example), reading the TOC would require that the tape be wound to the end, also taking up time and degrading the tape by excessive wear and tear. Compression further complicates matters, as calculating compressed positions for a TOC at the start would need compression of everything before writing the TOC, a TOC with uncompressed positions is not really useful (since you have to decompress everything anyway to get the right positions) and decompressing a TOC at the end of the file might require decompressing the whole file anyway, too.
 
-## Requirements ##
 <a name="requirements"></a>
+## Requirements ##
 
 * [tinycdb](http://www.corpit.ru/mjt/tinycdb.html)
 * A POSIX shell
 
-## Creating a .har archive ##
 <a name="creating-har"></a>
+## Creating a .har archive ##
 
     har file.har dir1 [ dir2 file3 ... ]
 
-## Extracting a .har archive ##
 <a name="extracting-har"></a>
+## Extracting a .har archive ##
 
     unhar file.har [ dir1 dir2 file3 ... ]
 
-## Working with .har archives ##
 <a name="working-with-har"></a>
+## Working with .har archives ##
 
 Here are some other recipes for working with harballs.
 
@@ -69,8 +69,8 @@ Dump the raw contents of a harball to stdout (files + metadata):
 
     cdb -d file.har
 
-## Benchmark ##
 <a name="benchmark"></a>
+## Benchmark ##
 
 Included is a benchmark which tests extraction of a single member from the middle of a large, uncompressed archive.
 
@@ -93,8 +93,8 @@ This is a totally contrived example which just demonstrates that, yes, tar xf do
 
 It's not hard to cook up examples where tar might win: smaller archive sizes; fewer members per archive; extracting more members from the archive; or in archive creation, where har is slower because among other things it's hashing keys. To make it a fair contest though, har and unhar would need to be rewritten in C.
 
-## Why not use har for everything? We don't need no tapes! ##
 <a name="har-for-everything"></a>
+## Why not use har for everything? We don't need no tapes! ##
 
 Most storage media is random access now. Why do we still need these lame sequential archives designed for old tape media?
 
@@ -106,8 +106,8 @@ A streaming archive format remains a very useful thing.
 
 Also, tape media remains a useful thing -- many shops still do reliable offsite backups to tape.
 
-## Issues and Todo items ##
 <a name="issues-todos"></a>
+## Issues and Todo items ##
 
 * Only works on linux currently. The GNU stat(1) invocation is very non-portable, and doesn't work on BSD or Mac OS X yet.
 * The largest .har archive that can be created is 2GB. This is a limitation of cdb.
@@ -116,8 +116,8 @@ Also, tape media remains a useful thing -- many shops still do reliable offsite 
 * The unhar(1) program has a bug where `unhar file.har path/to/subdir` will create a directory "subdir" in the current directory, instead of creating all the leading components ("path/to") as untar does.
 * The unhar(1) program could probably be much faster when extracting many members from the archive. It execs cdb(1) multiple times for every member to be extracted from the archive.
 
-## Authors ##
 <a name="authors"></a>
+## Authors ##
 
 Alan Grow, Matthew Story  
 Copyright (c) 2011  
