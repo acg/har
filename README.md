@@ -1,16 +1,30 @@
 # har: fast, random access filesystem archives #
+------------------------------------------------
 
 The har(1) and unhar(1) programs are a little hack aimed at a [problem with tar archives](http://en.wikipedia.org/wiki/Tar_%28file_format%29#Random_access).
 
 Like tar, har bundles a directory tree into a single archive file. Unlike tar, any file, directory listing or attribute can be extracted from a large .har archive in constant time, using constant memory, without waiting for wasteful disk reads. This is possible because a .har archive is just a [cdb](http://cr.yp.to/cdb.html).
 
-A .har archive is also referred to as a "harball."
+* [About har](#about-har)
+* [The problem with tar](#problem-with-tar)
+* [Requirements](#requirements)
+* [Creating a .har archive](#creating-har)
+* [Extracting a .har archive](#extracting-har)
+* [Working with .har archives](#working-with-har)
+* [Benchmark](#benchmark)
+* [Why not use har for everything? We don't need no tapes!](#har-for-everything)
+* [Issues and Todo items](#issues-todos)
+* [Authors](#authors)
 
-The name "HAR" stands for "H-ashed AR-chive".
+## About har ##
+<a name="about-har"></a>
+
+A .har archive is also referred to as a "harball." The name "HAR" stands for "H-ashed AR-chive".
 
 The inspiration for har was Matthew Story's [d2cdb](https://github.com/matthewstory/d2cdb). Some of the code in har and unhar bears a striking resemblance to d2cdb, and they all happen to be [54 line shell scripts](http://54lines.com/). Let's hear it for Matt. Cheerio, my good man.
 
 ## The problem with tar ##
+<a name="problem-with-tar"></a>
 
 From the [wikipedia entry on the tar file format](http://en.wikipedia.org/wiki/Tar_%28file_format%29#Random_access):
 
@@ -19,19 +33,23 @@ From the [wikipedia entry on the tar file format](http://en.wikipedia.org/wiki/T
 > The possible reason for not using a centralized location of information is rooted in the fact that tar was originally meant for tapes, which are bad at random access anyway: if the TOC were at the start of the archive, creating it would mean to first calculate all the positions of all files, which either needs doubled work, a big cache, or rewinding the tape after writing everything to write the TOC. On the other hand, if the TOC were at the end-of-file (as is the case with ZIP files, for example), reading the TOC would require that the tape be wound to the end, also taking up time and degrading the tape by excessive wear and tear. Compression further complicates matters, as calculating compressed positions for a TOC at the start would need compression of everything before writing the TOC, a TOC with uncompressed positions is not really useful (since you have to decompress everything anyway to get the right positions) and decompressing a TOC at the end of the file might require decompressing the whole file anyway, too.
 
 ## Requirements ##
+<a name="requirements"></a>
 
 * [tinycdb](http://www.corpit.ru/mjt/tinycdb.html)
 * A POSIX shell
 
-## Creating a .har Archive ##
+## Creating a .har archive ##
+<a name="creating-har"></a>
 
     har file.har dir1 [ dir2 file3 ... ]
 
-## Extracting a .har Archive ##
+## Extracting a .har archive ##
+<a name="extracting-har"></a>
 
     unhar file.har [ dir1 dir2 file3 ... ]
 
-## Working with .har Archives ##
+## Working with .har archives ##
+<a name="working-with-har"></a>
 
 Here are some other recipes for working with harballs.
 
@@ -51,9 +69,14 @@ Dump the raw contents of a harball to stdout (files + metadata):
 
     cdb -d file.har
 
-## Benchmarks ##
+## Benchmark ##
+<a name="benchmark"></a>
 
-Benchmarking extraction of a single member from the middle of an uncompressed archive containing 10,000 16k files. Results on my machine:
+Included is a benchmark which tests extraction of a single member from the middle of a large, uncompressed archive.
+
+Specifically, it extracts the 7987th file from an archive containing 10,000 16k files and one 156MB file.
+
+Results on my machine:
 
                 elapsed      user   system   #inputs   #outputs   archive size   
     tar xf        9.06s     0.15s    0.69s    641192         32      332810240
@@ -61,18 +84,32 @@ Benchmarking extraction of a single member from the middle of an uncompressed ar
 
 As you can see,
 
-  * unhar is ~50x faster than tar xf for this case
-  * both processes are I/O bound...
-  * ...but tar xf does ~1000x more IOs than unhar
-  * the archives are about the same size (316MB)
+* unhar is ~50x faster than tar xf for this case
+* both processes are I/O bound...
+* ...but unhar does ~1000x fewer IOs than tar xf
+* the archives are about the same size (316MB)
 
-This is a totally contrived example. It's easy to come up with examples where tar kicks that crap out of har: smaller archive sizes; fewer members per archive; archive creation, where har is slower because it's hashing keys, among other things.
+This is a totally contrived example which just demonstrates that, yes, tar xf does a sequential read. The times are highly dependent on disk speed and the order in which members were added to the tar archive.
 
-The point is, for random access to members in an archive, tar just got its ass handed to it by a 54-line shell script. Okay, with the help of about 1.6Kloc of tinycdb C code.
+It's not hard to cook up examples where tar might win: smaller archive sizes; fewer members per archive; extracting more members from the archive; or in archive creation, where har is slower because among other things it's hashing keys. To make it a fair contest though, har and unhar would need to be rewritten in C.
 
-## Issues and Todo Items ##
+## Why not use har for everything? We don't need no tapes! ##
+<a name="har-for-everything"></a>
 
-* Only works with linux currently. The GNU stat(1) invocation is very non-portable, and doesn't work on BSD or Mac OS X yet.
+Most storage media is random access now. Why do we still need these lame sequential archives designed for old tape media?
+
+Here's why:
+
+    ssh cloud tar xvzf home.tar.gz - | tar xvzf - -C /home
+
+A streaming archive format remains a very useful thing.
+
+Also, tape media remains a useful thing -- many shops still do reliable offsite backups to tape.
+
+## Issues and Todo items ##
+<a name="issues-todos"></a>
+
+* Only works on linux currently. The GNU stat(1) invocation is very non-portable, and doesn't work on BSD or Mac OS X yet.
 * The largest .har archive that can be created is 2GB. This is a limitation of cdb.
 * *SECURITY NOTE* The unhar(1) program doesn't fully validate input yet. We're still at the "hey we just threw something together" stage. Don't use it on untrusted .har files.
 * The unhar(1) program doesn't set ownership yet.
@@ -80,6 +117,7 @@ The point is, for random access to members in an archive, tar just got its ass h
 * The unhar(1) program could probably be much faster when extracting many members from the archive. It execs cdb(1) multiple times for every member to be extracted from the archive.
 
 ## Authors ##
+<a name="authors"></a>
 
 Alan Grow, Matthew Story  
 Copyright (c) 2011  
