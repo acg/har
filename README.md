@@ -51,7 +51,7 @@ Dump all the contents of a harball to stdout (files + metadata):
 
 ## Authors ##
 
-Alan Grow, Matthew Story <br/>
-Copyright (c) 2011 <br/>
+Alan Grow, Matthew Story  
+Copyright (c) 2011  
 Published under the BSD License
 
