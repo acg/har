@@ -48,7 +48,6 @@ extract_member() {
 [ $# -lt 1 ] && usage
 harball=`readlink -f "$1"` ; shift
 
-{ [ $# -gt 0 ] && for i in "$@"; do echo "$i"; done || cdb -q -m "$harball" r; 
-} | while read path; do
-  safe extract_member "$harball" "$path"
-done
+if [ $# -gt 0 ]; then ( for i in "$@"; do printf "%s\n" "$i"; done )
+                 else ( safe cdb -q -m "$harball" r ); fi | \
+while read path; do safe extract_member "$harball" "$path"; done
