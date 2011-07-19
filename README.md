@@ -28,7 +28,7 @@ Until somebody writes unhar(1), here are some recipes for working with harballs.
 
 Listing all paths in a harball:
 
-    cdb -l -m file.har | sed -ne 's#^f/##p'
+    cdb -l -m test.har | sed -ne 's#^f/##p' | uniq
 
 To extract the contents of a file to stdout, or print a listing of entries for directory members:
 

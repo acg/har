@@ -20,8 +20,7 @@ find "$@" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%g\t%Y\n" | (
     case "$type" in
       directory)
         filetype="d"
-        content=`ls -1 "$path"`   # FIXME not great for large dirs
-        cdbmake_entry "$key" "$content"
+        ls "$path" | while read entry; do cdbmake_entry "$key" "$entry"; done
         ;;
       regular*file)
         filetype="f"
