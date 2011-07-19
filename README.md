@@ -56,7 +56,7 @@ Dump the raw contents of a harball to stdout (files + metadata):
 * Only works with linux currently. The GNU stat(1) invocation is very non-portable, and doesn't work on BSD or Mac OS X yet.
 * The largest .har archive that can be created is 2GB. This is a limitation of cdb.
 * *SECURITY NOTE* The unhar(1) program doesn't fully validate input yet. We're still at the "hey we just threw something together" stage. Don't use it on untrusted .har files.
-* The unhar(1) program doesn't set modification times or ownership yet.
+* The unhar(1) program doesn't set ownership yet.
 * The unhar(1) program has a bug where `unhar file.har path/to/subdir` will create a directory "subdir" in the current directory, instead of creating all the leading components ("path/to") as untar does.
 * The unhar(1) program could probably be much faster when extracting many members from the archive. It execs cdb(1) multiple times for every member to be extracted from the archive.
 

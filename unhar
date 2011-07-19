@@ -40,8 +40,8 @@ extract_member() {
         ;;
     esac
     safe chmod -- "$perms" "$base"
-    # TODO touch, using mtime timestamp
-    # TODO chown, if we are root
+    touch -m -d "`date -R -u -d @\"$mtime\"`" "$base"
+    # TODO chown uid:gid, if we are root
   done
 }
 
