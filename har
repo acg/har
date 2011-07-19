@@ -10,7 +10,7 @@ cdbmake_entry() { safe printf "+%d,%d:%s->%s\n" "${#1}" "${#2}" "$1" "$2"; }
 [ $# -lt 2 ] && usage
 harball="$1" ; shift
 
-cdbmake_entry "r" "$(pwd)" # root entry is pwd, to support multiple dirs
+{ cdbmake_entry "r" "$(pwd)" # root entry is pwd, to support multiple dirs
 find "$@" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%g\t%Y\n" | (
   IFS=`printf '\t'` while read path type size perms uid gid mtime; do
     filetype=""
@@ -49,4 +49,4 @@ find "$@" | xargs stat --printf "%n\t%F\t%s\t%a\t%u\t%g\t%Y\n" | (
   done
 
   printf "\n"
-) | safe cdb -c "$harball"
+) } | safe cdb -c "$harball"
