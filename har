@@ -2,9 +2,9 @@
 
 # har(1): create a fast, random access filesystem archive
 
-barf() { echo "fatal: $0: $*" >&2; exit 111; }
+barf() { echo "$0: fatal: $*" >&2; exit 111; }
 safe() { "$@" || barf "cannot $*"; }
-usage() { echo "usage: $0 file.har dir [[dir]...]" >&2; exit 100; }
+usage() { echo "$0: usage: file.har dir [[dir]...]" >&2; exit 100; }
 cdbmake_entry() { safe printf "+%d,%d:%s->%s\n" "${#1}" "${#2}" "$1" "$2"; }
 
 [ $# -lt 2 ] && usage
